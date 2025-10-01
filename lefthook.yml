@@ -1,0 +1,16 @@
+pre-commit:
+  parallel: true
+  commands:
+    lint:
+      glob: "*.{js,jsx,ts,tsx,json,css}"
+      run: deno lint {staged_files}
+
+commit-msg:
+  commands:
+    commitlint:
+      run: deno task --eval commitlint --edit {1}
+
+pre-push:
+  commands:
+    build:
+      run: deno task tauri build --no-bundle
