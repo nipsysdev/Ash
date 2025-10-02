@@ -22,3 +22,9 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# ash specific
+public/fonts
+public/sprites
+*.pmtiles
+*.pbf
