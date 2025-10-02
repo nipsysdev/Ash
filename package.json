@@ -3,6 +3,9 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
+  "license": "GPL-3.0-or-later",
+  "author": "Xavier Saliniere <bonjour@xaviers.sh>",
+  "description": "Peer-to-peer field coordination for activists and protest movements",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
