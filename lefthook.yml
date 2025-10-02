@@ -3,7 +3,7 @@ pre-commit:
   commands:
     lint:
       glob: "*.{js,jsx,ts,tsx,json,css}"
-      run: deno lint {staged_files}
+      run: deno lint {staged_files} --permit-no-files
 
 commit-msg:
   commands:
