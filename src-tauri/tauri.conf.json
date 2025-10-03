@@ -13,8 +13,11 @@
     "windows": [
       {
         "title": "Ash",
-        "width": 800,
-        "height": 600
+        "width": 375,
+        "height": 812,
+        "fullscreen": false,
+        "resizable": false,
+        "backgroundColor": "#000"
       }
     ],
     "security": {

@@ -13,6 +13,7 @@
     "tauri": "tauri"
   },
   "dependencies": {
+    "@nipsysdev/lsd-react": "^0.2.0-beta.4-dev1",
     "@protomaps/basemaps": "^5.5.1",
     "@tailwindcss/vite": "^4.1.14",
     "maplibre-gl": "^5.8.0",
