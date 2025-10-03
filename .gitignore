@@ -23,8 +23,4 @@ dist-ssr
 *.sln
 *.sw?
 
-# ash specific
-public/fonts
-public/sprites
-*.pmtiles
-*.pbf
+.kilocode
