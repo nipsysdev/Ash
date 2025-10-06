@@ -45,10 +45,10 @@ const MapComponent = ({ locality }: MapComponentProps) => {
                                 attribution: '© Protomaps | © OpenStreetMap',
                             },
                         },
-                        layers: layers('protomaps', namedFlavor('light'), {
+                        layers: layers('protomaps', namedFlavor('dark'), {
                             lang: 'en',
                         }),
-                        sprite: `http://lokhlass/sprites/light`,
+                        sprite: `http://lokhlass/sprites/dark`,
                         glyphs: `http://lokhlass/fonts/{fontstack}/{range}.pbf`,
                     },
                     center: [locality.longitude, locality.latitude],
