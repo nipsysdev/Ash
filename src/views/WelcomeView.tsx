@@ -6,10 +6,15 @@ import IntroStep from '../components/welcome-steps/WelcomeIntroStep.tsx';
 interface StepConfig {
     component: React.ComponentType<{
         onStepChange: (stepChange: number) => void;
+        onSetupComplete?: () => void;
     }>;
 }
 
-export default function WelcomeView() {
+interface WelcomeViewProps {
+    onSetupComplete?: () => void;
+}
+
+export default function WelcomeView({ onSetupComplete }: WelcomeViewProps) {
     const [activeStep, setActiveStep] = useState(1);
 
     const steps: StepConfig[] = [
@@ -33,7 +38,10 @@ export default function WelcomeView() {
     return (
         <div className="flex justify-center items-center size-full p-10">
             {ActiveStepComponent && (
-                <ActiveStepComponent onStepChange={handleStepChange} />
+                <ActiveStepComponent
+                    onStepChange={handleStepChange}
+                    onSetupComplete={onSetupComplete}
+                />
             )}
         </div>
     );

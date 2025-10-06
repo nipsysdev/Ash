@@ -1,4 +1,5 @@
-use tauri::Manager;
+use tauri::{AppHandle, Manager, ipc::Channel};
+use std::io::Write;
 
 #[derive(serde::Deserialize, serde::Serialize, Clone)]
 struct Country {
@@ -40,6 +41,87 @@ struct Pagination {
 struct LocalitiesResponse {
     data: Vec<Locality>,
     pagination: Pagination,
+}
+
+#[derive(Clone, serde::Serialize)]
+#[serde(rename_all = "camelCase", rename_all_fields = "camelCase", tag = "event", content = "data")]
+enum DownloadEvent<'a> {
+    Started {
+        url: &'a str,
+        download_id: usize,
+        content_length: usize,
+    },
+    Progress {
+        download_id: usize,
+        chunk_length: usize,
+    },
+    Finished {
+        download_id: usize,
+    },
+}
+
+#[tauri::command]
+async fn download_map<'a>(
+    app: AppHandle,
+    country_id: String,
+    locality_id: String,
+    on_event: Channel<DownloadEvent<'a>>,
+) -> Result<(), String> {
+    let download_id = 1;
+    let url = format!("http://lokhlass:8080/countries/{}/localities/{}/pmtiles", country_id, locality_id);
+    
+    let client = tauri_plugin_http::reqwest::Client::new();
+    
+    let response = client
+        .get(&url)
+        .send()
+        .await
+        .map_err(|e| format!("Failed to send request: {}", e))?;
+    
+    if !response.status().is_success() {
+        return Err(format!("Request failed with status: {}", response.status()));
+    }
+    
+    let content_length = response
+        .content_length()
+        .ok_or("Failed to get content length")? as usize;
+    
+    on_event.send(DownloadEvent::Started {
+        url: &url,
+        download_id,
+        content_length,
+    }).map_err(|e| format!("Failed to send started event: {}", e))?;
+    
+    let app_data_dir = app.path().app_data_dir()
+        .map_err(|e| format!("Failed to get app data dir: {}", e))?;
+    
+    if !app_data_dir.exists() {
+        std::fs::create_dir_all(&app_data_dir)
+            .map_err(|e| format!("Failed to create app data dir: {}", e))?;
+    }
+    
+    let file_path = app_data_dir.join(format!("{}.pmtiles", locality_id));
+    let mut file = std::fs::File::create(&file_path)
+        .map_err(|e| format!("Failed to create file: {}", e))?;
+    
+    let bytes = response
+        .bytes()
+        .await
+        .map_err(|e| format!("Failed to read response bytes: {}", e))?;
+    
+    let chunk_length = bytes.len();
+    file.write_all(&bytes)
+        .map_err(|e| format!("Failed to write file: {}", e))?;
+    
+    on_event.send(DownloadEvent::Progress {
+        download_id,
+        chunk_length,
+    }).map_err(|e| format!("Failed to send progress event: {}", e))?;
+    
+    on_event.send(DownloadEvent::Finished { download_id })
+        .map_err(|e| format!("Failed to send finished event: {}", e))?;
+    
+    Ok(())
 }
 
 #[tauri::command]
@@ -132,7 +214,7 @@ pub fn run() {
             }
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![get_countries, get_localities])
+        .invoke_handler(tauri::generate_handler![get_countries, get_localities, download_map])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
