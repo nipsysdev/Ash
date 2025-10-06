@@ -1,10 +1,8 @@
-import { Button } from "@nipsysdev/lsd-react/client/Button";
-import { Typography } from "@nipsysdev/lsd-react/client/Typography";
-import logo from "../../assets/logos.svg";
+import { Button, Typography } from '@nipsysdev/lsd-react';
+import logo from '../../assets/logos.svg';
 
 interface IntroStepProps {
     onStepChange: (stepChange: number) => void;
-    activeStep: number;
 }
 
 export default function IntroStep({ onStepChange }: IntroStepProps) {
@@ -13,7 +11,9 @@ export default function IntroStep({ onStepChange }: IntroStepProps) {
             <div className="flex flex-col flex-auto items-center justify-center">
                 <div className="flex flex-col w-full h-3/5 justify-around">
                     <div>
-                        <Typography variant="h1">Ash</Typography>
+                        <Typography variant="h1" className="pb-2.5">
+                            Ash
+                        </Typography>
                         <Typography variant="subtitle1">
                             Your path through the fire
                         </Typography>
@@ -31,11 +31,7 @@ export default function IntroStep({ onStepChange }: IntroStepProps) {
             </div>
 
             <div className="flex justify-end w-full">
-                <img
-                    src={logo}
-                    alt="Logo"
-                    className="size-15"
-                />
+                <img src={logo} alt="Logo" className="size-15" />
             </div>
         </div>
     );

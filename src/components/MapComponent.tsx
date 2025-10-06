@@ -1,8 +1,8 @@
-import { useEffect, useRef } from "react";
-import maplibregl from "maplibre-gl";
-import "maplibre-gl/dist/maplibre-gl.css";
-import { Protocol } from "pmtiles";
-import { layers, namedFlavor } from "@protomaps/basemaps";
+import maplibregl from 'maplibre-gl';
+import { useEffect, useRef } from 'react';
+import 'maplibre-gl/dist/maplibre-gl.css';
+import { layers, namedFlavor } from '@protomaps/basemaps';
+import { Protocol } from 'pmtiles';
 
 const MapComponent = () => {
     const mapContainer = useRef<HTMLDivElement>(null);
@@ -12,7 +12,7 @@ const MapComponent = () => {
         if (!mapContainer.current) return;
 
         const protocol = new Protocol();
-        maplibregl.addProtocol("pmtiles", protocol.tile);
+        maplibregl.addProtocol('pmtiles', protocol.tile);
 
         map.current = new maplibregl.Map({
             container: mapContainer.current,
@@ -20,23 +20,22 @@ const MapComponent = () => {
                 version: 8,
                 sources: {
                     protomaps: {
-                        type: "vector",
-                        url: "pmtiles:///planet.pmtiles",
-                        attribution: "© Protomaps | © OpenStreetMap",
+                        type: 'vector',
+                        url: 'pmtiles://http://lokhlass:8080/countries/CZ/localities/101748113/pmtiles',
+                        attribution: '© Protomaps | © OpenStreetMap',
                     },
                 },
-                layers: layers("protomaps", namedFlavor("light"), {
-                    lang: "en",
+                layers: layers('protomaps', namedFlavor('light'), {
+                    lang: 'en',
                 }),
-                "sprite": `${globalThis.location.origin}/sprites/v4/light`,
-                "glyphs":
-                    `${globalThis.location.origin}/fonts/{fontstack}/{range}.pbf`,
+                sprite: `http://lokhlass/sprites/light`,
+                glyphs: `http://lokhlass/fonts/{fontstack}/{range}.pbf`,
             },
-            center: [-74.006, 40.7128],
-            zoom: 10,
+            center: [14.460249, 50.06694],
+            zoom: 12,
             attributionControl: {
                 compact: false,
-                customAttribution: "MapLibre",
+                customAttribution: 'MapLibre',
             },
         });
 
@@ -44,7 +43,7 @@ const MapComponent = () => {
 
         return () => {
             map.current?.remove();
-            maplibregl.removeProtocol("pmtiles");
+            maplibregl.removeProtocol('pmtiles');
         };
     }, []);
 
