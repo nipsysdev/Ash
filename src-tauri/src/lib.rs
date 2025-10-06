@@ -204,16 +204,6 @@ pub fn run() {
         .plugin(tauri_plugin_store::Builder::new().build())
         .plugin(tauri_plugin_http::init())
         .plugin(tauri_plugin_opener::init())
-        .setup(|app| {
-            let handle = app.handle();
-            let app_data_dir = handle.path().app_data_dir().unwrap();
-            println!("{:#?}", app_data_dir);
-            if !app_data_dir.exists() {
-                println!("test123");
-                std::fs::create_dir(&app_data_dir).unwrap();
-            }
-            Ok(())
-        })
         .invoke_handler(tauri::generate_handler![get_countries, get_localities, download_map])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
