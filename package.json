@@ -1,38 +1,45 @@
 {
-  "name": "ash",
-  "private": true,
-  "version": "0.1.0",
-  "type": "module",
-  "license": "GPL-3.0-or-later",
-  "author": "Xavier Saliniere <bonjour@xaviers.sh>",
-  "description": "Peer-to-peer field coordination for activists and protest movements",
-  "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
-    "preview": "vite preview",
-    "tauri": "tauri"
-  },
-  "dependencies": {
-    "@nipsysdev/lsd-react": "^0.2.0-beta.4-dev1",
-    "@protomaps/basemaps": "^5.5.1",
-    "@tailwindcss/vite": "^4.1.14",
-    "maplibre-gl": "^5.8.0",
-    "pmtiles": "^4.3.0",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0",
-    "@tauri-apps/api": "^2",
-    "@tauri-apps/plugin-opener": "^2",
-    "tailwindcss": "^4.1.14"
-  },
-  "devDependencies": {
-    "@commitlint/cli": "^20.1.0",
-    "@commitlint/config-conventional": "^20.0.0",
-    "@types/react": "^19.1.8",
-    "@types/react-dom": "^19.1.6",
-    "@vitejs/plugin-react": "^4.6.0",
-    "lefthook": "^1.13.6",
-    "typescript": "~5.8.3",
-    "vite": "^7.0.4",
-    "@tauri-apps/cli": "^2"
-  }
+    "name": "ash",
+    "private": true,
+    "version": "0.1.0",
+    "type": "module",
+    "license": "GPL-3.0-or-later",
+    "author": "Xavier Saliniere <bonjour@xaviers.sh>",
+    "description": "Peer-to-peer field coordination for activists and protest movements",
+    "scripts": {
+        "dev": "vite",
+        "build": "tsc && vite build",
+        "preview": "vite preview",
+        "tauri": "tauri",
+        "lint": "biome check .",
+        "lint:fix": "biome check . --fix",
+        "format": "biome format --write ."
+    },
+    "dependencies": {
+        "@nipsysdev/lsd-react": "file:../lsd-react/nipsysdev-lsd-react-0.0.1.tgz",
+        "@protomaps/basemaps": "^5.5.1",
+        "@tailwindcss/vite": "^4.1.14",
+        "@tauri-apps/api": "^2",
+        "@tauri-apps/plugin-fs": "~2",
+        "@tauri-apps/plugin-http": "~2.5.2",
+        "@tauri-apps/plugin-opener": "^2",
+        "@tauri-apps/plugin-store": "~2",
+        "maplibre-gl": "^5.8.0",
+        "pmtiles": "^4.3.0",
+        "react": "^19.1.0",
+        "react-dom": "^19.1.0",
+        "tailwindcss": "^4.1.14"
+    },
+    "devDependencies": {
+        "@biomejs/biome": "2.2.5",
+        "@commitlint/cli": "^20.1.0",
+        "@commitlint/config-conventional": "^20.0.0",
+        "@tauri-apps/cli": "^2",
+        "@types/react": "^19.1.8",
+        "@types/react-dom": "^19.1.6",
+        "@vitejs/plugin-react": "^4.6.0",
+        "lefthook": "^1.13.6",
+        "typescript": "~5.8.3",
+        "vite": "^7.0.4"
+    }
 }
