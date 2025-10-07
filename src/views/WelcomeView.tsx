@@ -36,13 +36,15 @@ export default function WelcomeView({ onSetupComplete }: WelcomeViewProps) {
     const ActiveStepComponent = steps[activeStep - 1]?.component;
 
     return (
-        <div className="flex justify-center items-center size-full p-10">
-            {ActiveStepComponent && (
-                <ActiveStepComponent
-                    onStepChange={handleStepChange}
-                    onSetupComplete={onSetupComplete}
-                />
-            )}
+        <div className="size-full pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]">
+            <div className="flex justify-center items-center size-full p-5 box-border">
+                {ActiveStepComponent && (
+                    <ActiveStepComponent
+                        onStepChange={handleStepChange}
+                        onSetupComplete={onSetupComplete}
+                    />
+                )}
+            </div>
         </div>
     );
 }

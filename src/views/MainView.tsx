@@ -4,6 +4,7 @@ import {
     SelectItem,
     SelectTrigger,
     SelectValue,
+    Typography,
 } from '@nipsysdev/lsd-react';
 import MapComponent from '../components/MapComponent.tsx';
 import { useLocalities } from '../hooks/useLocalities.ts';
@@ -21,35 +22,40 @@ export default function MainView() {
     }
 
     return (
-        <div className="flex flex-col size-full p-4 gap-4">
-            <Select
-                value={selectedLocality.id.toString()}
-                onValueChange={(value) => {
-                    const locality = localities.find(
-                        (l) => l.id.toString() === value,
-                    );
-                    if (locality) {
-                        setSelectedLocality(locality);
-                    }
-                }}
-            >
-                <SelectTrigger className="w-[200px]">
-                    <SelectValue placeholder="Select a locality" />
-                </SelectTrigger>
-                <SelectContent>
-                    {localities.map((locality) => (
-                        <SelectItem
-                            key={locality.id}
-                            value={locality.id.toString()}
-                        >
-                            {locality.name}
-                        </SelectItem>
-                    ))}
-                </SelectContent>
-            </Select>
+        <div className="size-full flex flex-col">
+            <MapComponent locality={selectedLocality} />
 
-            <div className="flex-auto">
-                <MapComponent locality={selectedLocality} />
+            <div className="absolute top-0 mt-[env(safe-area-inset-top)] p-5">
+                <Select
+                    value={selectedLocality.id.toString()}
+                    onValueChange={(value) => {
+                        const locality = localities.find(
+                            (l) => l.id.toString() === value,
+                        );
+                        if (locality) {
+                            setSelectedLocality(locality);
+                        }
+                    }}
+                >
+                    <SelectTrigger className="w-[200px]">
+                        <SelectValue placeholder="Select a locality" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        {localities.map((locality) => (
+                            <SelectItem
+                                key={locality.id}
+                                value={locality.id.toString()}
+                            >
+                                {locality.name}
+                            </SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
+            </div>
+            <div className="absolute bottom-0 mb-[env(safe-area-inset-top)] px-5 opacity-80">
+                <Typography variant="subtitle4" color="secondary">
+                    © MapLibre © Protomaps © OpenStreetMap
+                </Typography>
             </div>
         </div>
     );

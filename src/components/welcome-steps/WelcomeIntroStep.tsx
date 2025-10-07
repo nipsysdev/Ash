@@ -31,7 +31,7 @@ export default function IntroStep({ onStepChange }: IntroStepProps) {
             </div>
 
             <div className="flex justify-end w-full">
-                <img src={logo} alt="Logo" className="size-15" />
+                <img src={logo} alt="Logos" className="size-15" />
             </div>
         </div>
     );
