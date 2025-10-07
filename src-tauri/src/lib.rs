@@ -1,5 +1,6 @@
 use tauri::{AppHandle, Manager, ipc::Channel};
 use std::io::Write;
+use pmtiles::{tilejson::Bounds, AsyncPmTilesReader, TileCoord};
 
 #[derive(serde::Deserialize, serde::Serialize, Clone)]
 struct Country {
@@ -197,6 +198,64 @@ async fn get_localities(
     Ok(localities)
 }
 
+#[derive(serde::Serialize, serde::Deserialize)]
+struct PmtilesMetadata {
+    tile_type: String,
+    min_zoom: u8,
+    max_zoom: u8,
+    min_longitude: f32,
+    max_longitude: f32,
+    min_latitude: f32,
+    max_latitude: f32,
+    bounds: Bounds,
+}
+
+#[derive(serde::Serialize, serde::Deserialize)]
+struct TileResponse {
+    data: Option<Vec<u8>>,
+    cache_control: Option<String>,
+    expires: Option<String>,
+}
+
+#[tauri::command]
+async fn get_pmtiles_header(app: AppHandle, locality_id: u32) -> Result<PmtilesMetadata, String> {
+    let app_data_dir = app.path().app_data_dir()
+        .map_err(|e| format!("Failed to get app data dir: {}", e))?;
+    
+    let file_path = app_data_dir.join(format!("{}.pmtiles", locality_id));
+    let reader = AsyncPmTilesReader::new_with_path(file_path).await.map_err(|e| format!("Failed to open PMTiles file: {}", e))?;
+    let header = reader.get_header();
+    
+    let metadata = PmtilesMetadata {
+        tile_type: format!("{:?}", header.tile_type),
+        min_zoom: header.min_zoom,
+        max_zoom: header.max_zoom,
+        min_longitude: header.min_longitude,
+        min_latitude: header.min_latitude,
+        max_longitude: header.max_longitude,
+        max_latitude: header.max_latitude,
+        bounds: header.get_bounds(),
+    };
+    
+    Ok(metadata)
+}
+
+#[tauri::command]
+async fn get_pmtiles_tile(app: AppHandle, locality_id: u32, z: u8, x: u32, y: u32) -> Result<tauri::ipc::Response, String> {
+    let app_data_dir = app.path().app_data_dir()
+        .map_err(|e| format!("Failed to get app data dir: {}", e))?;
+    
+    let file_path = app_data_dir.join(format!("{}.pmtiles", locality_id));
+    let reader = AsyncPmTilesReader::new_with_path(file_path).await.map_err(|e| format!("Failed to open PMTiles file: {}", e))?;
+    let coord = TileCoord::new(z, x, y).unwrap();
+    let tile_data = reader.get_tile_decompressed(coord).await.map_err(|e| format!("Failed to get tile: {}", e))?;
+    
+    match tile_data {
+        Some(data) => Ok(tauri::ipc::Response::new(data.to_vec())),
+        None => Err("Tile not found".to_string()),
+    }
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -204,7 +263,13 @@ pub fn run() {
         .plugin(tauri_plugin_store::Builder::new().build())
         .plugin(tauri_plugin_http::init())
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![get_countries, get_localities, download_map])
+        .invoke_handler(tauri::generate_handler![
+            get_countries,
+            get_localities,
+            download_map,
+            get_pmtiles_header,
+            get_pmtiles_tile
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

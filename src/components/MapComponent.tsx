@@ -4,7 +4,6 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import { layers, namedFlavor } from '@protomaps/basemaps';
 import { convertFileSrc } from '@tauri-apps/api/core';
 import { appDataDir, join } from '@tauri-apps/api/path';
-import { PMTiles } from 'pmtiles';
 import type { Locality } from '../interfaces/locality.ts';
 import { createPMTilesProtocol } from '../utils/pmtiles-protocol.ts';
 
@@ -30,8 +29,7 @@ const MapComponent = ({ locality }: MapComponentProps) => {
                     `${locality.id}.pmtiles`,
                 );
                 const assetUrl = convertFileSrc(pmtilesPath);
-                const pmtilesInstance = new PMTiles(assetUrl);
-                const protocol = createPMTilesProtocol(pmtilesInstance);
+                const protocol = createPMTilesProtocol(locality.id);
                 maplibregl.addProtocol('pmtiles', protocol);
 
                 map.current = new maplibregl.Map({
@@ -42,7 +40,6 @@ const MapComponent = ({ locality }: MapComponentProps) => {
                             protomaps: {
                                 type: 'vector',
                                 url: `pmtiles://${assetUrl}`,
-                                attribution: '© Protomaps | © OpenStreetMap',
                             },
                         },
                         layers: layers('protomaps', namedFlavor('dark'), {
@@ -52,23 +49,12 @@ const MapComponent = ({ locality }: MapComponentProps) => {
                         glyphs: `http://lokhlass/fonts/{fontstack}/{range}.pbf`,
                     },
                     center: [locality.longitude, locality.latitude],
-                    zoom: 12,
-                    pitch: 0,
-                    attributionControl: {
-                        compact: false,
-                        customAttribution: 'MapLibre',
-                    },
+                    zoom: 18,
+                    pitch: 85,
+                    attributionControl: false,
+                    pitchWithRotate: false,
+                    rollEnabled: false,
                 });
-
-                map.current.on('zoom', () => {
-                    if (map.current) {
-                        const currentZoom = map.current.getZoom();
-                        const newPitch = currentZoom <= 14 ? 0 : 85;
-                        map.current.setPitch(newPitch);
-                    }
-                });
-
-                map.current.addControl(new maplibregl.NavigationControl());
             } catch (error) {
                 console.error('Error initializing map:', error);
             }

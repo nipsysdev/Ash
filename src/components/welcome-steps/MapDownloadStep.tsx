@@ -85,7 +85,6 @@ export default function MapDownloadStep({
     }, [localities, isDownloading]);
 
     function bytesToMB(bytes: number, decimals: number = 2): string {
-        console.log(bytes);
         const mb = bytes / (1024 * 1024);
         return `${mb.toFixed(decimals)} MB`;
     }
@@ -97,7 +96,6 @@ export default function MapDownloadStep({
 
     useEffect(() => {
         if (hasLoadedLocalities) return;
-        console.log('test');
         loadLocalities();
         setHasLoadedLocalities(true);
     }, [loadLocalities, hasLoadedLocalities]);

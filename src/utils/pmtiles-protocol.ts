@@ -1,43 +1,36 @@
+import { invoke } from '@tauri-apps/api/core';
 import type { GetResourceResponse, RequestParameters } from 'maplibre-gl';
-import { type PMTiles, TileType } from 'pmtiles';
+import { type PmtileHeader, TileType } from '../interfaces/pmtiles.ts';
 
-export function createPMTilesProtocol(pmtilesInstance: PMTiles) {
+export function createPMTilesProtocol(localityId: number) {
     return async (
         request: RequestParameters,
         abortController: AbortController,
     ): Promise<GetResourceResponse<unknown>> => {
-        // Check if the request was aborted
         if (abortController.signal.aborted) {
             throw new DOMException('Aborted', 'AbortError');
         }
-        if (!pmtilesInstance) {
-            throw new Error('PMTiles instance not set');
-        }
 
         try {
+            const header = await invoke<PmtileHeader>('get_pmtiles_header', {
+                localityId,
+            });
             if (request.type === 'json') {
-                const header = await pmtilesInstance.getHeader();
-
                 if (
-                    header.minLon >= header.maxLon ||
-                    header.minLat >= header.maxLat
+                    header.min_longitude >= header.max_longitude ||
+                    header.min_latitude >= header.max_latitude
                 ) {
                     console.error(
-                        `Bounds of PMTiles archive ${header.minLon},${header.minLat},${header.maxLon},${header.maxLat} are not valid.`,
+                        `Bounds of PMTiles archive ${header.min_longitude},${header.min_latitude},${header.max_longitude},${header.max_latitude} are not valid.`,
                     );
                 }
 
                 return {
                     data: {
                         tiles: [`${request.url}/{z}/{x}/{y}`],
-                        minzoom: header.minZoom,
-                        maxzoom: header.maxZoom,
-                        bounds: [
-                            header.minLon,
-                            header.minLat,
-                            header.maxLon,
-                            header.maxLat,
-                        ],
+                        minzoom: header.min_zoom,
+                        maxzoom: header.max_zoom,
+                        bounds: header.bounds,
                     },
                 };
             }
@@ -53,29 +46,27 @@ export function createPMTilesProtocol(pmtilesInstance: PMTiles) {
             const x = result[3];
             const y = result[4];
 
-            const header = await pmtilesInstance.getHeader();
-            const resp = await pmtilesInstance.getZxy(+z, +x, +y);
+            const data = await invoke<unknown>('get_pmtiles_tile', {
+                localityId,
+                z: +z,
+                x: +x,
+                y: +y,
+            });
 
-            if (resp) {
+            if (data) {
                 return {
-                    data: new Uint8Array(resp.data),
-                    cacheControl: resp.cacheControl || null,
-                    expires: resp.expires || null,
+                    data: new Uint8Array(data as number[]),
                 };
             }
 
-            if (header.tileType === TileType.Mvt) {
+            if (header.tile_type === TileType.Mvt) {
                 return {
                     data: new Uint8Array(),
-                    cacheControl: null,
-                    expires: null,
                 };
             }
 
             return {
                 data: null,
-                cacheControl: null,
-                expires: null,
             };
         } catch (error) {
             console.error('Error loading PMTiles tile:', error);
