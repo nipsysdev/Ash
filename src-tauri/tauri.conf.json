@@ -25,8 +25,12 @@
                 "default-src": [
                     "'self'",
                     "asset:",
+                    "data:",
+                    "blob:",
                     "http://asset.localhost",
-                    "https://asset.localhost"
+                    "https://asset.localhost",
+                    "http://ipc.localhost",
+                    "http://lokhlass"
                 ]
             },
             "assetProtocol": {
