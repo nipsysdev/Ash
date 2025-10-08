@@ -1,5 +1,5 @@
 export interface Country {
-    countryCode: string;
-    countryName: string;
-    localityCount: number;
+    country_code: string;
+    country_name: string;
+    locality_count: number;
 }

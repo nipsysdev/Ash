@@ -47,7 +47,7 @@ export default function LocalitySelectionStep({
         let localities: Locality[] = [];
         try {
             localities = await invoke<Locality[]>('get_localities', {
-                countryCode: selectedCountry.countryCode,
+                countryCode: selectedCountry.country_code,
                 query,
             });
         } catch (error) {
@@ -86,13 +86,13 @@ export default function LocalitySelectionStep({
                                 : 'Fetching countries...'
                         }
                         options={countries.map((c) => ({
-                            label: c.countryName,
-                            value: c.countryCode,
+                            label: c.country_name,
+                            value: c.country_code,
                         }))}
                         onValueChange={(value) => {
                             setSelectedCountry(
                                 countries.find(
-                                    (c) => c.countryCode === value,
+                                    (c) => c.country_code === value,
                                 ) ?? null,
                             );
                             setSelectedLocality(null);

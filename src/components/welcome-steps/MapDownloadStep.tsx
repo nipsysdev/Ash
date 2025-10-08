@@ -148,18 +148,18 @@ export default function MapDownloadStep({
                                         {locality.name}
                                     </Typography>
                                     <Typography variant="body2">
-                                        {locality.fileSize < 100000
-                                            ? bytesToKb(locality.fileSize)
-                                            : bytesToMB(locality.fileSize)}
+                                        {locality.file_size < 100000
+                                            ? bytesToKb(locality.file_size)
+                                            : bytesToMB(locality.file_size)}
                                     </Typography>
                                 </div>
                                 <Progress
                                     value={
-                                        locality.fileSize > 0
+                                        locality.file_size > 0
                                             ? ((downloadProgress[
                                                   locality.id.toString()
                                               ] || 0) /
-                                                  locality.fileSize) *
+                                                  locality.file_size) *
                                               100
                                             : 0
                                     }

@@ -5,7 +5,7 @@ export interface Locality {
     placetype: string;
     latitude: number;
     longitude: number;
-    fileSize: number;
+    file_size: number;
 }
 
 export interface LocalitiesResponse {
@@ -14,6 +14,6 @@ export interface LocalitiesResponse {
         total: number;
         page: number;
         limit: number;
-        totalPages: number;
+        total_pages: number;
     };
 }

@@ -4,11 +4,8 @@ use pmtiles::{tilejson::Bounds, AsyncPmTilesReader, TileCoord};
 
 #[derive(serde::Deserialize, serde::Serialize, Clone)]
 struct Country {
-    #[serde(rename = "countryCode")]
     country_code: String,
-    #[serde(rename = "countryName")]
     country_name: String,
-    #[serde(rename = "localityCount")]
     locality_count: u32,
 }
 
@@ -25,7 +22,10 @@ struct Locality {
     placetype: String,
     latitude: f64,
     longitude: f64,
-    #[serde(rename = "fileSize")]
+    min_latitude: f64,
+    max_latitude: f64,
+    min_longitude: f64,
+    max_longitude: f64,
     file_size: u64,
 }
 
@@ -34,7 +34,6 @@ struct Pagination {
     total: u64,
     page: u64,
     limit: u64,
-    #[serde(rename = "totalPages")]
     total_pages: u64,
 }
 
@@ -45,7 +44,7 @@ struct LocalitiesResponse {
 }
 
 #[derive(Clone, serde::Serialize)]
-#[serde(rename_all = "camelCase", rename_all_fields = "camelCase", tag = "event", content = "data")]
+#[serde(tag = "event", content = "data")]
 enum DownloadEvent<'a> {
     Started {
         url: &'a str,

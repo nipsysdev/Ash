@@ -3,20 +3,20 @@ export type DownloadEvent =
           event: 'started';
           data: {
               url: string;
-              downloadId: number;
-              contentLength: number;
+              download_id: number;
+              content_length: number;
           };
       }
     | {
           event: 'progress';
           data: {
-              downloadId: number;
-              chunkLength: number;
+              download_id: number;
+              chunk_length: number;
           };
       }
     | {
           event: 'finished';
           data: {
-              downloadId: number;
+              download_id: number;
           };
       };
