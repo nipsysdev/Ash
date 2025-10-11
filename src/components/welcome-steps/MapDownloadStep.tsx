@@ -12,13 +12,23 @@ import {
 import { Channel, invoke } from '@tauri-apps/api/core';
 import { load } from '@tauri-apps/plugin-store';
 import { useCallback, useEffect, useState } from 'react';
-import type { DownloadEvent } from '../../interfaces/download.ts';
 import type { Locality } from '../../interfaces/locality.ts';
 
 interface MapDownloadStepProps {
     onStepChange: (stepChange: number) => void;
     onSetupComplete?: () => void;
 }
+
+export type DownloadEvent =
+    | {
+          event: 'progress';
+          data: {
+              chunk_length: number;
+          };
+      }
+    | {
+          event: 'finished';
+      };
 
 export default function MapDownloadStep({
     onStepChange,
@@ -42,24 +52,20 @@ export default function MapDownloadStep({
 
         setIsDownloading(true);
         setDownloadedCount(0);
+        setDownloadProgress({});
 
         for (const locality of localities) {
             const onEvent = new Channel<DownloadEvent>();
 
             onEvent.onmessage = (message) => {
-                if (message.event === 'started') {
-                    setDownloadProgress((prev) => ({
-                        ...prev,
-                        [locality.id.toString()]: 0,
-                    }));
-                } else if (message.event === 'progress') {
+                if (message.event === 'progress') {
                     setDownloadProgress((prev) => {
                         const currentProgress =
                             prev[locality.id.toString()] || 0;
                         return {
                             ...prev,
                             [locality.id.toString()]:
-                                currentProgress + message.data.chunkLength,
+                                currentProgress + message.data.chunk_length,
                         };
                     });
                 } else if (message.event === 'finished') {

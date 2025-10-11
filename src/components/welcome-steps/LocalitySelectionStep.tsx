@@ -1,3 +1,4 @@
+import { useStore } from '@nanostores/react';
 import {
     Autocomplete,
     Button,
@@ -12,6 +13,8 @@ import { load } from '@tauri-apps/plugin-store';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { Country } from '../../interfaces/country.ts';
 import type { Locality } from '../../interfaces/locality.ts';
+import { TorStatus } from '../../interfaces/tor.ts';
+import { $isTorDialogOpened, $torStatus } from '../../stores/torStore.ts';
 
 interface LocalitySelectionStepProps {
     onStepChange: (stepChange: number) => void;
@@ -20,8 +23,10 @@ interface LocalitySelectionStepProps {
 export default function LocalitySelectionStep({
     onStepChange,
 }: LocalitySelectionStepProps) {
+    const torStatus = useStore($torStatus);
     const [countries, setCountries] = useState<Country[]>([]);
-    const [hasFetchedCountries, setHasFetchedCountries] = useState(false);
+    const hasFetchedCountries = useRef(false);
+    const [isFetchingCountries, setIsFetchingCountries] = useState(false);
     const [selectedCountry, setSelectedCountry] = useState<Country | null>(
         null,
     );
@@ -34,13 +39,22 @@ export default function LocalitySelectionStep({
     const fetchedLocalities = useRef<Locality[]>([]);
 
     const fetchCountries = useCallback(async () => {
+        setIsFetchingCountries(true);
         try {
             const countriesData = await invoke<Country[]>('get_countries');
             setCountries(countriesData);
         } catch (error) {
             console.error('Failed to fetch countries:', error);
         }
+        setIsFetchingCountries(false);
     }, []);
+
+    useEffect(() => {
+        if (torStatus === TorStatus.Online && !hasFetchedCountries.current) {
+            hasFetchedCountries.current = true;
+            fetchCountries();
+        }
+    }, [torStatus, fetchCountries]);
 
     const fetchLocalities = async (query: string): Promise<Locality[]> => {
         if (!selectedCountry) return [];
@@ -58,11 +72,10 @@ export default function LocalitySelectionStep({
     };
 
     useEffect(() => {
-        if (hasFetchedCountries) return;
-
-        fetchCountries();
-        setHasFetchedCountries(true);
-    }, [fetchCountries, hasFetchedCountries]);
+        if (torStatus !== TorStatus.Online) {
+            $isTorDialogOpened.set(true);
+        }
+    }, [torStatus]);
 
     return (
         <div className="flex flex-col gap-y-10 size-full">
@@ -80,6 +93,7 @@ export default function LocalitySelectionStep({
                     <Autocomplete
                         className="min-w-full"
                         label="Countries"
+                        isLoading={isFetchingCountries}
                         placeholder={
                             hasFetchedCountries
                                 ? 'Select a country'
