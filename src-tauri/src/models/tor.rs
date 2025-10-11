@@ -73,7 +73,10 @@ impl TorClientWrapper {
             .get()
             .ok_or_else(|| anyhow::anyhow!("Tor client not initialized"))?;
 
-        client.bootstrap().await.map_err(|e| anyhow::anyhow!(e))
+        client
+            .bootstrap()
+            .await
+            .map_err(|e: arti_client::Error| anyhow::anyhow!(e))
     }
 
     pub fn is_ready(&self) -> bool {
@@ -106,7 +109,7 @@ impl TorClientWrapper {
         client
             .connect((host, port))
             .await
-            .map_err(|e| anyhow::anyhow!(e))
+            .map_err(|e: arti_client::Error| anyhow::anyhow!(e))
     }
 
     pub async fn listen_bootstrap_events(&self, app: AppHandle) -> Result<()> {
