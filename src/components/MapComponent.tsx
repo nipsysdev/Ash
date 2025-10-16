@@ -4,7 +4,7 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import { layers, namedFlavor } from '@protomaps/basemaps';
 import { convertFileSrc } from '@tauri-apps/api/core';
 import { appDataDir, join } from '@tauri-apps/api/path';
-import type { Locality } from '../interfaces/locality.ts';
+import type { Locality } from '../interfaces/localitysrv.ts';
 import { createPMTilesProtocol } from '../utils/pmtiles-protocol.ts';
 
 interface MapComponentProps {

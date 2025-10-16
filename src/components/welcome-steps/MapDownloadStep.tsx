@@ -12,7 +12,7 @@ import {
 import { Channel, invoke } from '@tauri-apps/api/core';
 import { load } from '@tauri-apps/plugin-store';
 import { useCallback, useEffect, useState } from 'react';
-import type { Locality } from '../../interfaces/locality.ts';
+import type { Locality } from '../../interfaces/localitysrv';
 
 interface MapDownloadStepProps {
     onStepChange: (stepChange: number) => void;
@@ -75,7 +75,7 @@ export default function MapDownloadStep({
 
             try {
                 await invoke('download_map', {
-                    countryId: locality.country,
+                    onionLink: locality.onion_link,
                     localityId: locality.id.toString(),
                     onEvent,
                 });

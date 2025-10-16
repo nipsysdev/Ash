@@ -1,6 +1,6 @@
 import { load } from '@tauri-apps/plugin-store';
 import { useEffect, useState } from 'react';
-import type { Locality } from '../interfaces/locality.ts';
+import type { Locality } from '../interfaces/localitysrv';
 
 export function useLocalities() {
     const [localities, setLocalities] = useState<Locality[]>([]);

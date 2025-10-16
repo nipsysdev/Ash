@@ -1,6 +1,5 @@
 mod anyhow_tauri;
 mod commands;
-mod config;
 mod models;
 
 use anyhow::Result;
@@ -29,8 +28,6 @@ fn try_run() -> Result<()> {
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
-            commands::get_countries,
-            commands::get_localities,
             commands::download_map,
             commands::get_pmtiles_header,
             commands::get_pmtiles_tile,

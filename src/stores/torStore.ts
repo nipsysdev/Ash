@@ -1,22 +1,22 @@
 import { invoke } from '@tauri-apps/api/core';
 import { listen } from '@tauri-apps/api/event';
 import { atom, effect, onMount } from 'nanostores';
-import { TorStatus } from '../interfaces/tor.ts';
+import { NetworkStatus } from '../interfaces/networkStatus';
 
 export const $isTorDialogOpened = atom(false);
-export const $torStatus = atom<TorStatus>(TorStatus.Offline);
+export const $torStatus = atom<NetworkStatus>(NetworkStatus.Offline);
 export const $torBootstrapProgress = atom(0);
 export const $torError = atom<string | null>(null);
 
 export async function connectToTor() {
-    $torStatus.set(TorStatus.Pending);
+    $torStatus.set(NetworkStatus.Pending);
     try {
         if (await invoke('bootstrap_tor')) {
-            $torStatus.set(TorStatus.Online);
+            $torStatus.set(NetworkStatus.Online);
         }
     } catch (error) {
         console.error(error);
-        $torStatus.set(TorStatus.Error);
+        $torStatus.set(NetworkStatus.Error);
         $torError.set(`${error}`);
     }
 }
@@ -27,7 +27,7 @@ onMount($torStatus, () => {
         (event: { payload: { progress: number } }) => {
             $torBootstrapProgress.set(event.payload.progress);
             if (event.payload.progress >= 100) {
-                $torStatus.set(TorStatus.Online);
+                $torStatus.set(NetworkStatus.Online);
             }
         },
     );

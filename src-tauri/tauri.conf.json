@@ -22,16 +22,15 @@
         ],
         "security": {
             "csp": {
-                "default-src": [
-                    "'self'",
-                    "asset:",
-                    "data:",
-                    "blob:",
-                    "http://asset.localhost",
-                    "https://asset.localhost",
+                "connect-src": [
+                    "wss:",
                     "http://ipc.localhost",
-                    "http://lokhlass"
-                ]
+                    "http://lokhlass",
+                    "http://tauri.localhost"
+                ],
+                "script-src": "'unsafe-eval' 'self'",
+                "style-src": "'unsafe-inline' 'self'",
+                "worker-src": ["blob:", "http://tauri.localhost"]
             },
             "assetProtocol": {
                 "enable": true,

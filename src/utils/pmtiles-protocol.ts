@@ -2,7 +2,7 @@ import { invoke } from '@tauri-apps/api/core';
 import type { GetResourceResponse, RequestParameters } from 'maplibre-gl';
 import { type PmtileHeader, TileType } from '../interfaces/pmtiles.ts';
 
-export function createPMTilesProtocol(localityId: number) {
+export function createPMTilesProtocol(localityId: string) {
     return async (
         request: RequestParameters,
         abortController: AbortController,

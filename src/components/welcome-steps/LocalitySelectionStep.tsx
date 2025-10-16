@@ -1,6 +1,7 @@
 import { useStore } from '@nanostores/react';
 import {
     Autocomplete,
+    Badge,
     Button,
     Card,
     CardContent,
@@ -8,13 +9,15 @@ import {
     Label,
     Typography,
 } from '@nipsysdev/lsd-react';
-import { invoke } from '@tauri-apps/api/core';
 import { load } from '@tauri-apps/plugin-store';
-import { useCallback, useEffect, useRef, useState } from 'react';
-import type { Country } from '../../interfaces/country.ts';
-import type { Locality } from '../../interfaces/locality.ts';
-import { TorStatus } from '../../interfaces/tor.ts';
-import { $isTorDialogOpened, $torStatus } from '../../stores/torStore.ts';
+import { useRef, useState } from 'react';
+import type { Country, Locality } from '../../interfaces/localitysrv.ts';
+import {
+    $isWakuDialogOpened,
+    $wakuStatus,
+    searchCountries,
+    searchLocalities,
+} from '../../stores/wakuStore.ts';
 
 interface LocalitySelectionStepProps {
     onStepChange: (stepChange: number) => void;
@@ -23,10 +26,7 @@ interface LocalitySelectionStepProps {
 export default function LocalitySelectionStep({
     onStepChange,
 }: LocalitySelectionStepProps) {
-    const torStatus = useStore($torStatus);
-    const [countries, setCountries] = useState<Country[]>([]);
-    const hasFetchedCountries = useRef(false);
-    const [isFetchingCountries, setIsFetchingCountries] = useState(false);
+    const wakuStatus = useStore($wakuStatus);
     const [selectedCountry, setSelectedCountry] = useState<Country | null>(
         null,
     );
@@ -36,34 +36,17 @@ export default function LocalitySelectionStep({
     const [selectedLocalities, setSelectedLocalities] = useState<Locality[]>(
         [],
     );
+    const fetchedCountries = useRef<Country[]>([]);
     const fetchedLocalities = useRef<Locality[]>([]);
-
-    const fetchCountries = useCallback(async () => {
-        setIsFetchingCountries(true);
-        try {
-            const countriesData = await invoke<Country[]>('get_countries');
-            setCountries(countriesData);
-        } catch (error) {
-            console.error('Failed to fetch countries:', error);
-        }
-        setIsFetchingCountries(false);
-    }, []);
-
-    useEffect(() => {
-        if (torStatus === TorStatus.Online && !hasFetchedCountries.current) {
-            hasFetchedCountries.current = true;
-            fetchCountries();
-        }
-    }, [torStatus, fetchCountries]);
 
     const fetchLocalities = async (query: string): Promise<Locality[]> => {
         if (!selectedCountry) return [];
         let localities: Locality[] = [];
         try {
-            localities = await invoke<Locality[]>('get_localities', {
-                countryCode: selectedCountry.country_code,
-                query,
-            });
+            localities = (
+                await searchLocalities(selectedCountry.country_code, query)
+            ).localities;
+            console.log('squad', localities);
         } catch (error) {
             console.error('Failed to fetch localities:', error);
         }
@@ -71,16 +54,21 @@ export default function LocalitySelectionStep({
         return localities;
     };
 
-    useEffect(() => {
-        if (torStatus !== TorStatus.Online) {
-            $isTorDialogOpened.set(true);
+    const fetchCountries = async (query: string): Promise<Country[]> => {
+        let countries: Country[] = [];
+        try {
+            countries = (await searchCountries(query)).countries;
+        } catch (error) {
+            console.error('Failed to fetch countries:', error);
         }
-    }, [torStatus]);
+        fetchedCountries.current = countries;
+        return countries;
+    };
 
     return (
         <div className="flex flex-col gap-y-10 size-full">
             <div className="flex-auto flex flex-col">
-                <div className="mb-5">
+                <div className="mb-2">
                     <Typography variant="h3" className="pb-2">
                         Where do you operate?
                     </Typography>
@@ -89,23 +77,33 @@ export default function LocalitySelectionStep({
                     </Typography>
                 </div>
 
+                <div className="mb-3 flex justify-end">
+                    <Badge
+                        variant="outlined"
+                        size="sm"
+                        onClick={() => $isWakuDialogOpened.set(true)}
+                    >
+                        Waku: {wakuStatus}
+                    </Badge>
+                </div>
+
                 <div className="flex flex-col flex-auto gap-y-5">
                     <Autocomplete
                         className="min-w-full"
                         label="Countries"
-                        isLoading={isFetchingCountries}
-                        placeholder={
-                            hasFetchedCountries
-                                ? 'Select a country'
-                                : 'Fetching countries...'
-                        }
-                        options={countries.map((c) => ({
-                            label: c.country_name,
-                            value: c.country_code,
-                        }))}
+                        placeholder="Search a country"
+                        loadingText="Loading countries"
+                        onOptionsFetch={async (searchText) => {
+                            return (await fetchCountries(searchText)).map(
+                                (c) => ({
+                                    label: c.country_name,
+                                    value: `${c.country_code}`,
+                                }),
+                            );
+                        }}
                         onValueChange={(value) => {
                             setSelectedCountry(
-                                countries.find(
+                                fetchedCountries.current.find(
                                     (c) => c.country_code === value,
                                 ) ?? null,
                             );

@@ -1,6 +1,7 @@
 import { useCallback, useState } from 'react';
 import LocalitySelectionStep from '../components/welcome-steps/LocalitySelectionStep.tsx';
 import MapDownloadStep from '../components/welcome-steps/MapDownloadStep.tsx';
+import NetworkSetupStep from '../components/welcome-steps/NetworkSetupStep.tsx';
 import IntroStep from '../components/welcome-steps/WelcomeIntroStep.tsx';
 
 interface StepConfig {
@@ -19,6 +20,7 @@ export default function WelcomeView({ onSetupComplete }: WelcomeViewProps) {
 
     const steps: StepConfig[] = [
         { component: IntroStep },
+        { component: NetworkSetupStep },
         { component: LocalitySelectionStep },
         { component: MapDownloadStep },
     ];

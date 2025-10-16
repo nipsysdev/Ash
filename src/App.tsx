@@ -1,24 +1,27 @@
 import './App.css';
 import { useStore } from '@nanostores/react';
 import { useEffect, useRef } from 'react';
-import TorStatusDialog from './components/tor/TorStatusDialog.tsx';
+import NetworkStatusDialog from './components/network/NetworkStatusDialog.tsx';
 import { useSetupStatus } from './hooks/useSetupStatus.ts';
-import { TorStatus } from './interfaces/tor.ts';
-import { $torStatus, connectToTor } from './stores/torStore.ts';
+import { NetworkStatus } from './interfaces/networkStatus.ts';
+import { $wakuStatus, createWakuNode } from './stores/wakuStore.ts';
 import MainView from './views/MainView.tsx';
 import WelcomeView from './views/WelcomeView.tsx';
 
 export default function App() {
-    const hasRequestedBootstrap = useRef(false);
-    const torStatus = useStore($torStatus);
+    const hasRequestedWakuConnect = useRef(false);
+    const wakuStatus = useStore($wakuStatus);
     const { isSetupDone, setSetupDone } = useSetupStatus();
 
     useEffect(() => {
-        if (!hasRequestedBootstrap.current && torStatus === TorStatus.Offline) {
-            hasRequestedBootstrap.current = true;
-            connectToTor();
+        if (
+            !hasRequestedWakuConnect.current &&
+            wakuStatus === NetworkStatus.Offline
+        ) {
+            hasRequestedWakuConnect.current = true;
+            createWakuNode();
         }
-    }, [torStatus]);
+    }, [wakuStatus]);
 
     if (isSetupDone === null) {
         return null;
@@ -26,7 +29,7 @@ export default function App() {
 
     return (
         <div className="size-full">
-            <TorStatusDialog />
+            <NetworkStatusDialog />
             {isSetupDone ? (
                 <MainView />
             ) : (
