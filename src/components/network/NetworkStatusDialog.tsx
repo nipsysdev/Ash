@@ -5,7 +5,13 @@ import {
     AlertDialogDescription,
     AlertDialogHeader,
     AlertDialogTitle,
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
     Progress,
+    Typography,
 } from '@nipsysdev/lsd-react';
 import { effect } from 'nanostores';
 import { useRef } from 'react';
@@ -19,6 +25,7 @@ import {
 import {
     $isWakuDialogOpened,
     $wakuError,
+    $wakuServerChannel,
     $wakuStatus,
 } from '../../stores/wakuStore';
 
@@ -30,6 +37,7 @@ export default function NetworkStatusDialog() {
 
     const isWakuDialogOpened = useStore($isWakuDialogOpened);
     const wakuStatus = useStore($wakuStatus);
+    const wakuServerChannel = useStore($wakuServerChannel);
     const wakuError = useStore($wakuError);
 
     const activeNetwork = useRef<NetworkType | null>(null);
@@ -54,18 +62,6 @@ export default function NetworkStatusDialog() {
         },
     );
 
-    effect([$torStatus], (torStatus) => {
-        if (torStatus === NetworkStatus.Online) {
-            setTimeout(() => $isTorDialogOpened.set(false), 2000);
-        }
-    });
-
-    effect([$wakuStatus], (wakuStatus) => {
-        if (wakuStatus === NetworkStatus.Online) {
-            setTimeout(() => $isWakuDialogOpened.set(false), 2000);
-        }
-    });
-
     const getNetworkName = (type: NetworkType | null) => {
         return type === NetworkType.Tor ? 'Tor' : 'Waku';
     };
@@ -89,7 +85,7 @@ export default function NetworkStatusDialog() {
     };
 
     return (
-        <AlertDialog
+        <Dialog
             open={isDialogOpen}
             onOpenChange={() => {
                 if (activeNetwork.current === NetworkType.Tor) {
@@ -99,30 +95,52 @@ export default function NetworkStatusDialog() {
                 }
             }}
         >
-            <AlertDialogContent>
-                <AlertDialogHeader>
-                    <AlertDialogTitle>
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>
                         {getNetworkName(activeNetwork.current)} Status:{' '}
                         <span className="capitalize">{status}</span>
-                    </AlertDialogTitle>
-                    <AlertDialogDescription>
+                    </DialogTitle>
+                    <DialogDescription>
                         {getStatusDescription(status, activeNetwork.current)}
-                    </AlertDialogDescription>
-                </AlertDialogHeader>
+                    </DialogDescription>
+                </DialogHeader>
                 {activeNetwork.current === NetworkType.Tor && (
                     <Progress
                         value={status === NetworkStatus.Online ? 100 : progress}
                     />
                 )}
                 {activeNetwork.current === NetworkType.Waku && (
-                    <Progress
-                        indeterminate={status === NetworkStatus.Pending}
-                        value={
-                            status === NetworkStatus.Online ? 100 : undefined
-                        }
-                    />
+                    <>
+                        <Progress
+                            indeterminate={status === NetworkStatus.Pending}
+                            value={
+                                status === NetworkStatus.Online
+                                    ? 100
+                                    : undefined
+                            }
+                        />
+
+                        {wakuStatus === NetworkStatus.Online && (
+                            <div className="text-center">
+                                <Typography variant="body2">
+                                    {wakuServerChannel === null
+                                        ? 'Initializing backend channel'
+                                        : 'Backend channel ready'}
+                                </Typography>
+                                <Progress
+                                    indeterminate={wakuServerChannel === null}
+                                    value={
+                                        wakuServerChannel !== null
+                                            ? 100
+                                            : undefined
+                                    }
+                                />
+                            </div>
+                        )}
+                    </>
                 )}
-            </AlertDialogContent>
-        </AlertDialog>
+            </DialogContent>
+        </Dialog>
     );
 }

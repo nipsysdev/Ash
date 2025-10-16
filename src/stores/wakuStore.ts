@@ -40,6 +40,13 @@ export const $wakuError = atom<string | null>(null);
 export const $wakuSentMessages = atom<Record<string, Record<string, string>>>(
     {},
 );
+export const $reconnectId = atom<number | null>(null);
+
+effect([$wakuStatus], (wakuStatus) => {
+    if (wakuStatus === NetworkStatus.Online) {
+        createWakuServerChannel();
+    }
+});
 
 export async function createWakuNode() {
     try {
@@ -56,8 +63,6 @@ export async function createWakuNode() {
             userAgent: 'ash',
         });
 
-        console.log(wakuLightNode);
-
         wakuLightNode.events.addEventListener(
             WakuEvent.Health,
             (event: CustomEvent) => {
@@ -67,15 +72,22 @@ export async function createWakuNode() {
                 if (health === HealthStatus.SufficientlyHealthy) {
                     console.log('Waku node is sufficiently healthy');
                     $wakuStatus.set(NetworkStatus.Online);
+
+                    const reconnectId = $reconnectId.get();
+                    if (reconnectId) {
+                        clearTimeout(reconnectId);
+                    }
                 } else if (health === HealthStatus.MinimallyHealthy) {
                     console.log('Waku node is minimally healthy');
                     $wakuStatus.set(NetworkStatus.Pending);
                 } else {
                     console.log('Waku node is not healthy');
-                    if ($wakuStatus.get() === NetworkStatus.Online) {
-                        createWakuNode().then(() => createWakuServerChannel());
-                    }
                     $wakuStatus.set(NetworkStatus.Offline);
+                    $reconnectId.set(
+                        setTimeout(() => {
+                            createWakuNode();
+                        }, 5000),
+                    );
                 }
             },
         );

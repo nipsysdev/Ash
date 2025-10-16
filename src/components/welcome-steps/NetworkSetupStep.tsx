@@ -8,11 +8,7 @@ import {
     $torStatus,
     connectToTor,
 } from '../../stores/torStore.ts';
-import {
-    $wakuServerChannel,
-    $wakuStatus,
-    createWakuServerChannel,
-} from '../../stores/wakuStore.ts';
+import { $wakuServerChannel, $wakuStatus } from '../../stores/wakuStore.ts';
 
 interface NetworkSetupStepProps {
     onStepChange: (stepChange: number) => void;
@@ -36,7 +32,6 @@ export default function NetworkSetupStep({
     const wakuServerChannel = useStore($wakuServerChannel);
 
     const hasRequestedTorConnect = useRef(false);
-    const hasRequestedWakuSrvChannel = useRef(false);
 
     useEffect(() => {
         if (
@@ -47,16 +42,6 @@ export default function NetworkSetupStep({
             connectToTor();
         }
     }, [torStatus]);
-
-    useEffect(() => {
-        if (
-            wakuStatus === NetworkStatus.Online &&
-            !hasRequestedWakuSrvChannel.current
-        ) {
-            hasRequestedWakuSrvChannel.current = true;
-            createWakuServerChannel();
-        }
-    }, [wakuStatus]);
 
     return (
         <div className="flex flex-col gap-y-10 size-full">
