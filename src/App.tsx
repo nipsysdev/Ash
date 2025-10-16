@@ -1,6 +1,9 @@
 import './App.css';
 import { useStore } from '@nanostores/react';
 import { useEffect, useRef } from 'react';
+import GroupInviteDialog from './components/GroupInviteDialog.tsx';
+import GroupJoinDialog from './components/GroupJoinDialog.tsx';
+import NewGroupDialog from './components/NewGroupDialog.tsx';
 import NetworkStatusDialog from './components/network/NetworkStatusDialog.tsx';
 import { NetworkStatus } from './interfaces/networkStatus.ts';
 import { $storeSetupDone } from './stores/jsonStore.ts';
@@ -30,6 +33,9 @@ export default function App() {
     return (
         <div className="size-full">
             <NetworkStatusDialog />
+            <NewGroupDialog />
+            <GroupInviteDialog />
+            <GroupJoinDialog />
             {isSetupDone ? <MainView /> : <WelcomeView />}
         </div>
     );

@@ -208,6 +208,7 @@ dependencies = [
  "serde_json",
  "tauri",
  "tauri-build",
+ "tauri-plugin-barcode-scanner",
  "tauri-plugin-fs",
  "tauri-plugin-http",
  "tauri-plugin-opener",
@@ -1408,7 +1409,7 @@ checksum = "357422a457ccb850dc8f1c1680e0670079560feaad6c2e247e3f345c4fab8a3f"
 dependencies = [
  "heck 0.5.0",
  "indexmap 2.11.4",
- "itertools 0.12.1",
+ "itertools 0.14.0",
  "proc-macro-crate 3.4.0",
  "proc-macro2",
  "quote",
@@ -1426,7 +1427,7 @@ checksum = "dd5f2b7218a51c827a11d22d1439b598121fac94bf9b99452e4afffe512d78c9"
 dependencies = [
  "heck 0.5.0",
  "indexmap 2.11.4",
- "itertools 0.12.1",
+ "itertools 0.14.0",
  "proc-macro-crate 3.4.0",
  "proc-macro2",
  "quote",
@@ -3045,15 +3046,6 @@ checksum = "173609498df190136aa7dea1a91db051746d339e18476eed5ca40521f02d7aa5"
 dependencies = [
  "is-docker",
  "once_cell",
-]
-
-[[package]]
-name = "itertools"
-version = "0.12.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ba291022dbbd398a455acf126c1e341954079855bc60dfdda641363bd6922569"
-dependencies = [
- "either",
 ]
 
 [[package]]
@@ -6316,6 +6308,20 @@ dependencies = [
  "tauri-utils",
  "toml 0.9.8",
  "walkdir",
+]
+
+[[package]]
+name = "tauri-plugin-barcode-scanner"
+version = "2.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e3f79bba83da3c115ac248a658c5613db1325a7c7ba889e344287e373828a08b"
+dependencies = [
+ "log",
+ "serde",
+ "serde_json",
+ "tauri",
+ "tauri-plugin",
+ "thiserror 2.0.17",
 ]
 
 [[package]]

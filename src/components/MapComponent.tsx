@@ -1,11 +1,16 @@
 import maplibregl from 'maplibre-gl';
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import 'maplibre-gl/dist/maplibre-gl.css';
+import { useStore } from '@nanostores/react';
 import { layers, namedFlavor } from '@protomaps/basemaps';
 import { convertFileSrc } from '@tauri-apps/api/core';
 import { appDataDir, join } from '@tauri-apps/api/path';
+import type { Marker } from '../interfaces/group';
 import type { Locality } from '../interfaces/localitysrv.ts';
+import { sendMarkerMessage } from '../service/chatService';
+import { $storeDeviceId } from '../stores/jsonStore';
 import { createPMTilesProtocol } from '../utils/pmtiles-protocol.ts';
+import MarkerComponent from './MarkerComponent';
 
 interface MapComponentProps {
     locality: Locality | null;
@@ -14,6 +19,13 @@ interface MapComponentProps {
 const MapComponent = ({ locality }: MapComponentProps) => {
     const mapContainer = useRef<HTMLDivElement>(null);
     const map = useRef<maplibregl.Map | null>(null);
+    const deviceId = useStore($storeDeviceId);
+
+    const addMarkerToMap = useCallback((lat: number, lng: number) => {
+        if (!map.current) return;
+
+        new maplibregl.Marker().setLngLat([lng, lat]).addTo(map.current);
+    }, []);
 
     useEffect(() => {
         if (!mapContainer.current || !locality) return;
@@ -55,6 +67,23 @@ const MapComponent = ({ locality }: MapComponentProps) => {
                     pitchWithRotate: false,
                     rollEnabled: false,
                 });
+
+                // Add click event listener to the map
+                map.current.on('click', (e) => {
+                    if (!deviceId) return;
+
+                    const { lng, lat } = e.lngLat;
+                    const markerData: Marker = {
+                        latitude: lat,
+                        longitude: lng,
+                    };
+
+                    // Send marker to other users
+                    sendMarkerMessage(markerData, deviceId);
+
+                    // Add marker to local map
+                    addMarkerToMap(lat, lng);
+                });
             } catch (error) {
                 console.error('Error initializing map:', error);
             }
@@ -69,9 +98,14 @@ const MapComponent = ({ locality }: MapComponentProps) => {
                 maplibregl.removeProtocol('pmtiles');
             }
         };
-    }, [locality]);
+    }, [locality, deviceId, addMarkerToMap]);
 
-    return <div ref={mapContainer} className="size-full" />;
+    return (
+        <>
+            <div ref={mapContainer} className="size-full" />
+            <MarkerComponent map={map.current} />
+        </>
+    );
 };
 
 export default MapComponent;

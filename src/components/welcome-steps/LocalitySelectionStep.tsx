@@ -11,13 +11,12 @@ import {
 } from '@nipsysdev/lsd-react';
 import { useRef, useState } from 'react';
 import type { Country, Locality } from '../../interfaces/localitysrv.ts';
-import { setStoreLocalities } from '../../stores/jsonStore.ts';
 import {
-    $isWakuDialogOpened,
-    $wakuStatus,
     searchCountries,
     searchLocalities,
-} from '../../stores/wakuStore.ts';
+} from '../../service/searchService.ts';
+import { setStoreLocalities } from '../../stores/jsonStore.ts';
+import { $isWakuDialogOpened, $wakuStatus } from '../../stores/wakuStore.ts';
 
 interface LocalitySelectionStepProps {
     onStepChange: (stepChange: number) => void;
@@ -46,7 +45,6 @@ export default function LocalitySelectionStep({
             localities = (
                 await searchLocalities(selectedCountry.country_code, query)
             ).localities;
-            console.log('squad', localities);
         } catch (error) {
             console.error('Failed to fetch localities:', error);
         }

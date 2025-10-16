@@ -21,6 +21,7 @@
         "@protomaps/basemaps": "^5.5.1",
         "@tailwindcss/vite": "^4.1.14",
         "@tauri-apps/api": "^2",
+        "@tauri-apps/plugin-barcode-scanner": "~2",
         "@tauri-apps/plugin-fs": "~2",
         "@tauri-apps/plugin-http": "~2.5.2",
         "@tauri-apps/plugin-opener": "^2",
@@ -33,6 +34,7 @@
         "protobufjs": "^7.5.4",
         "react": "^19.1.0",
         "react-dom": "^19.1.0",
+        "react-qr-code": "^2.0.18",
         "tailwindcss": "^4.1.14"
     },
     "devDependencies": {
