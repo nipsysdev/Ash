@@ -1,8 +1,10 @@
+import { nanoid } from 'nanoid';
 import { useCallback, useState } from 'react';
 import LocalitySelectionStep from '../components/welcome-steps/LocalitySelectionStep.tsx';
 import MapDownloadStep from '../components/welcome-steps/MapDownloadStep.tsx';
 import NetworkSetupStep from '../components/welcome-steps/NetworkSetupStep.tsx';
 import IntroStep from '../components/welcome-steps/WelcomeIntroStep.tsx';
+import { setStoreDeviceId, setStoreSetupDone } from '../stores/jsonStore.ts';
 
 interface StepConfig {
     component: React.ComponentType<{
@@ -11,11 +13,7 @@ interface StepConfig {
     }>;
 }
 
-interface WelcomeViewProps {
-    onSetupComplete?: () => void;
-}
-
-export default function WelcomeView({ onSetupComplete }: WelcomeViewProps) {
+export default function WelcomeView() {
     const [activeStep, setActiveStep] = useState(1);
 
     const steps: StepConfig[] = [
@@ -36,6 +34,11 @@ export default function WelcomeView({ onSetupComplete }: WelcomeViewProps) {
     );
 
     const ActiveStepComponent = steps[activeStep - 1]?.component;
+
+    async function onSetupComplete() {
+        await setStoreDeviceId(nanoid());
+        await setStoreSetupDone(true);
+    }
 
     return (
         <div className="size-full pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]">

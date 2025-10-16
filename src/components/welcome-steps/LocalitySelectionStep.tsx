@@ -9,9 +9,9 @@ import {
     Label,
     Typography,
 } from '@nipsysdev/lsd-react';
-import { load } from '@tauri-apps/plugin-store';
 import { useRef, useState } from 'react';
 import type { Country, Locality } from '../../interfaces/localitysrv.ts';
+import { setStoreLocalities } from '../../stores/jsonStore.ts';
 import {
     $isWakuDialogOpened,
     $wakuStatus,
@@ -196,11 +196,7 @@ export default function LocalitySelectionStep({
                 </Button>
                 <Button
                     onClick={async () => {
-                        const store = await load('store.json');
-                        await store.set(
-                            'active_localities',
-                            selectedLocalities,
-                        );
+                        await setStoreLocalities(selectedLocalities);
                         onStepChange(1);
                     }}
                     variant="filled"

@@ -2,16 +2,16 @@ import './App.css';
 import { useStore } from '@nanostores/react';
 import { useEffect, useRef } from 'react';
 import NetworkStatusDialog from './components/network/NetworkStatusDialog.tsx';
-import { useSetupStatus } from './hooks/useSetupStatus.ts';
 import { NetworkStatus } from './interfaces/networkStatus.ts';
+import { $storeSetupDone } from './stores/jsonStore.ts';
 import { $wakuStatus, createWakuNode } from './stores/wakuStore.ts';
 import MainView from './views/MainView.tsx';
 import WelcomeView from './views/WelcomeView.tsx';
 
 export default function App() {
-    const hasRequestedWakuConnect = useRef(false);
     const wakuStatus = useStore($wakuStatus);
-    const { isSetupDone, setSetupDone } = useSetupStatus();
+    const isSetupDone = useStore($storeSetupDone);
+    const hasRequestedWakuConnect = useRef(false);
 
     useEffect(() => {
         if (
@@ -30,11 +30,7 @@ export default function App() {
     return (
         <div className="size-full">
             <NetworkStatusDialog />
-            {isSetupDone ? (
-                <MainView />
-            ) : (
-                <WelcomeView onSetupComplete={setSetupDone} />
-            )}
+            {isSetupDone ? <MainView /> : <WelcomeView />}
         </div>
     );
 }

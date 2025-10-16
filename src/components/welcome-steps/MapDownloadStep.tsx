@@ -1,3 +1,4 @@
+import { useStore } from '@nanostores/react';
 import {
     Button,
     Card,
@@ -10,9 +11,8 @@ import {
     Typography,
 } from '@nipsysdev/lsd-react';
 import { Channel, invoke } from '@tauri-apps/api/core';
-import { load } from '@tauri-apps/plugin-store';
-import { useCallback, useEffect, useState } from 'react';
-import type { Locality } from '../../interfaces/localitysrv';
+import { useCallback, useState } from 'react';
+import { $storeLocalities } from '../../stores/jsonStore';
 
 interface MapDownloadStepProps {
     onStepChange: (stepChange: number) => void;
@@ -34,18 +34,12 @@ export default function MapDownloadStep({
     onStepChange,
     onSetupComplete,
 }: MapDownloadStepProps) {
-    const [hasLoadedLocalities, setHasLoadedLocalities] = useState(false);
-    const [localities, setLocalities] = useState<Locality[]>([]);
+    const storeLocalities = useStore($storeLocalities);
     const [downloadProgress, setDownloadProgress] = useState<
         Record<string, number>
     >({});
     const [isDownloading, setIsDownloading] = useState(false);
     const [downloadedCount, setDownloadedCount] = useState(0);
-
-    const loadLocalities = useCallback(async () => {
-        const store = await load('store.json');
-        setLocalities((await store.get<Locality[]>('active_localities')) ?? []);
-    }, []);
 
     const downloadMaps = useCallback(async () => {
         if (isDownloading) return;
@@ -54,7 +48,7 @@ export default function MapDownloadStep({
         setDownloadedCount(0);
         setDownloadProgress({});
 
-        for (const locality of localities) {
+        for (const locality of storeLocalities) {
             const onEvent = new Channel<DownloadEvent>();
 
             onEvent.onmessage = (message) => {
@@ -88,7 +82,7 @@ export default function MapDownloadStep({
         }
 
         setIsDownloading(false);
-    }, [localities, isDownloading]);
+    }, [storeLocalities, isDownloading]);
 
     function bytesToMB(bytes: number, decimals: number = 2): string {
         const mb = bytes / (1024 * 1024);
@@ -99,12 +93,6 @@ export default function MapDownloadStep({
         const kb = bytes / 1024;
         return `${kb.toFixed(2)} KB`;
     }
-
-    useEffect(() => {
-        if (hasLoadedLocalities) return;
-        loadLocalities();
-        setHasLoadedLocalities(true);
-    }, [loadLocalities, hasLoadedLocalities]);
 
     return (
         <div className="flex flex-col gap-y-10 size-full">
@@ -122,7 +110,8 @@ export default function MapDownloadStep({
                     <CardHeader>
                         <CardTitle>Map data download</CardTitle>
                         <CardDescription>
-                            Downloaded: {downloadedCount}/{localities.length}
+                            Downloaded: {downloadedCount}/
+                            {storeLocalities.length}
                         </CardDescription>
                         <CardAction>
                             <Button
@@ -131,20 +120,20 @@ export default function MapDownloadStep({
                                 onClick={downloadMaps}
                                 disabled={
                                     isDownloading ||
-                                    localities.length === 0 ||
-                                    downloadedCount === localities.length
+                                    storeLocalities.length === 0 ||
+                                    downloadedCount === storeLocalities.length
                                 }
                             >
                                 {isDownloading
                                     ? 'Downloading'
-                                    : downloadedCount === localities.length
+                                    : downloadedCount === storeLocalities.length
                                       ? 'Done'
                                       : 'Start'}
                             </Button>
                         </CardAction>
                     </CardHeader>
                     <CardContent className="flex flex-col gap-y-5">
-                        {localities.map((locality) => (
+                        {storeLocalities.map((locality) => (
                             <div
                                 key={locality.id}
                                 className="flex flex-col gap-y-2"
@@ -187,7 +176,7 @@ export default function MapDownloadStep({
                         }
                     }}
                     variant="filled"
-                    disabled={downloadedCount < localities.length}
+                    disabled={downloadedCount < storeLocalities.length}
                 >
                     End setup
                 </Button>

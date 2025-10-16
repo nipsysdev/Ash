@@ -20,21 +20,17 @@ import {
 } from '@nipsysdev/lsd-react';
 import { MessageSquare } from 'lucide-react';
 import MapComponent from '../components/MapComponent.tsx';
-import { useLocalities } from '../hooks/useLocalities.ts';
+import { $storeLocalities } from '../stores/jsonStore.ts';
+import { $mapSelectedLocality } from '../stores/mapStore.ts';
 import { $isWakuDialogOpened, $wakuStatus } from '../stores/wakuStore.ts';
 
 export default function MainView() {
+    const storeLocalities = useStore($storeLocalities);
+    const selectedLocality = useStore($mapSelectedLocality);
     const wakuStatus = useStore($wakuStatus);
 
-    const { localities, selectedLocality, setSelectedLocality, isLoading } =
-        useLocalities();
-
-    if (isLoading) {
-        return <div>Loading...</div>;
-    }
-
-    if (!selectedLocality) {
-        return <div>No locality selected</div>;
+    if (!storeLocalities.length || !selectedLocality) {
+        return null;
     }
 
     return (
@@ -90,11 +86,11 @@ export default function MainView() {
                 <Select
                     value={selectedLocality.id.toString()}
                     onValueChange={(value) => {
-                        const locality = localities.find(
+                        const locality = storeLocalities.find(
                             (l) => l.id.toString() === value,
                         );
                         if (locality) {
-                            setSelectedLocality(locality);
+                            $mapSelectedLocality.set(locality);
                         }
                     }}
                 >
@@ -102,7 +98,7 @@ export default function MainView() {
                         <SelectValue placeholder="Select a locality" />
                     </SelectTrigger>
                     <SelectContent>
-                        {localities.map((locality) => (
+                        {storeLocalities.map((locality) => (
                             <SelectItem
                                 key={locality.id}
                                 value={locality.id.toString()}

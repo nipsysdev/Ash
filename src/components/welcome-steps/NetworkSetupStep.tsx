@@ -51,13 +51,12 @@ export default function NetworkSetupStep({
     useEffect(() => {
         if (
             wakuStatus === NetworkStatus.Online &&
-            !hasRequestedWakuSrvChannel.current &&
-            torStatus === NetworkStatus.Online
+            !hasRequestedWakuSrvChannel.current
         ) {
             hasRequestedWakuSrvChannel.current = true;
             createWakuServerChannel();
         }
-    }, [torStatus, wakuStatus]);
+    }, [wakuStatus]);
 
     return (
         <div className="flex flex-col gap-y-10 size-full">
