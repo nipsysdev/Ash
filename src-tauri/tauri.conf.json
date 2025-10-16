@@ -25,7 +25,7 @@
                 "connect-src": [
                     "wss:",
                     "http://ipc.localhost",
-                    "http://lokhlass",
+                    "http://protomaps.github.io",
                     "http://tauri.localhost"
                 ],
                 "script-src": "'unsafe-eval' 'self'",
