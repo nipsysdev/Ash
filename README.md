@@ -17,6 +17,11 @@ In it's current here are the features of the Ash Android app:
 - Map marker sharing between group members
 
 
+
+https://github.com/user-attachments/assets/86eb1da6-2caf-46d4-87a2-b85196cb5a12
+
+
+
 ## How it works
 Ash doesn't come with map data, and it doesn't come with a backend url neither.
 
