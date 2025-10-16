@@ -57,8 +57,8 @@ const MapComponent = ({ locality }: MapComponentProps) => {
                         layers: layers('protomaps', namedFlavor('dark'), {
                             lang: 'en',
                         }),
-                        sprite: `http://lokhlass/sprites/dark`,
-                        glyphs: `http://lokhlass/fonts/{fontstack}/{range}.pbf`,
+                        sprite: `https://protomaps.github.io/basemaps-assets/sprites/v4/dark`,
+                        glyphs: `https://protomaps.github.io/basemaps-assets/fonts/{fontstack}/{range}.pbf`,
                     },
                     center: [locality.longitude, locality.latitude],
                     zoom: 18,
