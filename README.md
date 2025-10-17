@@ -1,4 +1,5 @@
 # Ash - Peer-to-Peer Field Coordination
+*"Ash - Your path through the fire"*
 
 The goal of Ash is to be a secure and privacy perserving mapping and communication application designed for activists and protest movements, or anyone caring about their privacy and the use of decentralised software.
 
@@ -17,11 +18,7 @@ In it's current here are the features of the Ash Android app:
 - Message communication with group members
 - Map marker sharing between group members
 
-
-
 https://github.com/user-attachments/assets/86eb1da6-2caf-46d4-87a2-b85196cb5a12
-
-
 
 ## How it works
 Ash doesn't come with map data, and it doesn't come with a backend url neither.
@@ -92,34 +89,17 @@ Check out mise.toml for the exact versions used for development.
 3. Run the development server:
    ```bash
    pnpm tauri dev
+   or
+   pnpm tauri android dev
    ```
 
-### Building for Production
+### Building APKs
 
 ```bash
-pnpm build
-pnpm tauri build
+cargo tauri android build --apk
+cargo tauri android build --apk --debug
 ```
 
 ## Contributing
 
-Ash is open-source software licensed under the GPL-3.0-or-later license. We welcome contributions from developers who share our commitment to privacy, security, and supporting activist movements.
-
-Please see our contributing guidelines for more information on how to get involved.
-
-## Security Considerations
-
-While Ash is designed with security in mind, no software can guarantee complete safety. Users should:
-
-- Be aware of their physical security when using the app
-- Understand that digital security is just one part of overall safety
-- Keep their devices updated and secure
-- Be cautious about sharing sensitive information
-
-## Support
-
-For technical support, feature requests, or to report issues, please visit our GitHub repository.
-
----
-
-*"Ash - Your path through the fire"*
+Ash is open-source software licensed under the GPL-3.0-or-later license. Contributions are welcome!
