@@ -2,7 +2,8 @@
 
 The goal of Ash is to be a secure and privacy perserving mapping and communication application designed for activists and protest movements, or anyone caring about their privacy and the use of decentralised software.
 
-Developed using Tauri (Rust), React (Typescript), a custom UI library based on LSD, Tor, Waku.
+Built using Tauri (Rust), React (Typescript), Tor, Waku.\
+The UI has been developed with [@nipsysdev/lsd-react](https://github.com/nipsysdev/lsd-react), a library I created for this project, based on the [@acid-info/lsd](https://github.com/acid-info/lsd). I built it on top of shadcn and Radix UI.
 
 Map features developed using software and/or data from Protomaps, MapLibre GL and OpenstreetMap.
 
