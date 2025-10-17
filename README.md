@@ -49,18 +49,18 @@ Think of it as a Waze for activists - a tool that helps people navigate and shar
 When users first open Ash, they're guided through a simple onboarding process:
 
 1. **Introduction**: A welcome screen explaining the app's purpose
-2. **Network Setup**: Connection to the Waku peer-to-peer network
+2. **Network Setup**: Connection to the Waku peer-to-peer network and Tor
 3. **Location Selection**: Choosing which areas to download maps for
-4. **Map Download**: Fetching offline map data for selected locations
+4. **Map Download**: Fetching map data for selected locations for offline use
 
 ### Main Application
 
 After setup, users have access to:
 
-- **Interactive Map**: A full-screen map showing their selected area
-- **Group Management**: Creating, joining, and managing coordination groups
-- **Secure Chat**: Encrypted messaging within groups
-- **Location Sharing**: Marking points of interest on the map
+* **Interactive Map**: A full-screen map showing their selected area (one locality dispay at a time, I need to work on displaying all on the same map)
+* **Group Management**: Creating, joining, and managing coordination groups
+* **Group Chat**: Direct messaging with group members
+* **Location Sharing**: Marking points of interest on the map
 
 ## Getting Started
 
