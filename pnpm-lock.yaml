@@ -12,8 +12,8 @@ importers:
         specifier: ^1.0.0
         version: 1.0.0(nanostores@1.0.1)(react@19.2.0)
       '@nipsysdev/lsd-react':
-        specifier: file:../lsd-react/nipsysdev-lsd-react-0.0.1.tgz
-        version: file:../lsd-react/nipsysdev-lsd-react-0.0.1.tgz(@types/react-dom@19.2.0(@types/react@19.2.0))(@types/react@19.2.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(vite@7.1.9(@types/node@24.6.2)(jiti@2.6.1)(lightningcss@1.30.1)(tsx@4.20.6))
+        specifier: ^0.0.1
+        version: 0.0.1(@types/react-dom@19.2.0(@types/react@19.2.0))(@types/react@19.2.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(vite@7.1.9(@types/node@24.6.2)(jiti@2.6.1)(lightningcss@1.30.1)(tsx@4.20.6))
       '@protomaps/basemaps':
         specifier: ^5.5.1
         version: 5.5.1
@@ -638,9 +638,8 @@ packages:
       nanostores: ^0.9.0 || ^0.10.0 || ^0.11.0 || ^1.0.0
       react: '>=18.0.0'
 
-  '@nipsysdev/lsd-react@file:../lsd-react/nipsysdev-lsd-react-0.0.1.tgz':
-    resolution: {integrity: sha512-E9vTrjdhvoVp046iajI0J/BbLOOQEkYjmEUXZg/6TZbhGasX4rbbRwAprGcpq483h/6DPuFSJx7Zm7BDHrkLww==, tarball: file:../lsd-react/nipsysdev-lsd-react-0.0.1.tgz}
-    version: 0.0.1
+  '@nipsysdev/lsd-react@0.0.1':
+    resolution: {integrity: sha512-/s/bg7lXDALUT459u/HUiOUD1SHvjqSGCByUe8MQaWuDmdAzfkY9t1ERR+7s6jREhBu8b9zziDWNC7KfN0r+cA==}
     engines: {node: '>=24.0.0', pnpm: '>=10'}
     peerDependencies:
       react: ^19.0.0
@@ -3430,7 +3429,7 @@ snapshots:
       nanostores: 1.0.1
       react: 19.2.0
 
-  '@nipsysdev/lsd-react@file:../lsd-react/nipsysdev-lsd-react-0.0.1.tgz(@types/react-dom@19.2.0(@types/react@19.2.0))(@types/react@19.2.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(vite@7.1.9(@types/node@24.6.2)(jiti@2.6.1)(lightningcss@1.30.1)(tsx@4.20.6))':
+  '@nipsysdev/lsd-react@0.0.1(@types/react-dom@19.2.0(@types/react@19.2.0))(@types/react@19.2.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(vite@7.1.9(@types/node@24.6.2)(jiti@2.6.1)(lightningcss@1.30.1)(tsx@4.20.6))':
     dependencies:
       '@radix-ui/react-accordion': 1.2.12(@types/react-dom@19.2.0(@types/react@19.2.0))(@types/react@19.2.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       '@radix-ui/react-alert-dialog': 1.1.15(@types/react-dom@19.2.0(@types/react@19.2.0))(@types/react@19.2.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)

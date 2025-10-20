@@ -17,7 +17,7 @@
     },
     "dependencies": {
         "@nanostores/react": "^1.0.0",
-        "@nipsysdev/lsd-react": "file:../lsd-react/nipsysdev-lsd-react-0.0.1.tgz",
+        "@nipsysdev/lsd-react": "^0.0.1",
         "@protomaps/basemaps": "^5.5.1",
         "@tailwindcss/vite": "^4.1.14",
         "@tauri-apps/api": "^2",
