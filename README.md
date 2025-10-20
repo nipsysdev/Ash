@@ -7,7 +7,7 @@ The app is inspired by Organic Maps/OsmAnd for offline map functionality and Waz
 
 ## Demo video
 
-https://github.com/user-attachments/assets/86eb1da6-2caf-46d4-87a2-b85196cb5a12
+https://github.com/user-attachments/assets/e5fda4ac-1ae7-4ea6-91b0-a920bb145a54
 
 ## How It Works
 
