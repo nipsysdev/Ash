@@ -69,13 +69,8 @@ export async function createWakuNode() {
     try {
         $wakuStatus.set(NetworkStatus.Pending);
 
-        const customBootstrap = [
-            '/dns4/waku-test.bloxy.one/tcp/8000/wss/p2p/16Uiu2HAmSZbDB7CusdRhgkD81VssRjQV5ZH13FbzCGcdnbbh6VwZ',
-            '/dns4/waku.fryorcraken.xyz/tcp/8000/wss/p2p/16Uiu2HAmMRvhDHrtiHft1FTUYnn6cVA8AWVrTyLUayJJ3MWpUZDB',
-        ];
         const wakuLightNode = await createLightNode({
-            defaultBootstrap: false,
-            bootstrapPeers: customBootstrap,
+            defaultBootstrap: true,
             userAgent: 'ash',
         });
 
