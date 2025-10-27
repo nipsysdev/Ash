@@ -1,17 +1,23 @@
 import { useStore } from '@nanostores/react';
-import maplibregl from 'maplibre-gl';
+import type maplibregl from 'maplibre-gl';
+import { effect } from 'nanostores';
 import protobuf from 'protobufjs';
 import { useEffect, useRef } from 'react';
 import type { Marker } from '../interfaces/group';
+import { $storeSelectedGroup } from '../stores/jsonStore';
 import { $wakuChatChannel } from '../stores/wakuStore';
+import { createMarkerWithName } from '../utils/mapUtils';
 
 interface MarkerComponentProps {
     map: maplibregl.Map | null;
+    clearLocalMarkers?: () => void;
 }
 
-const MarkerComponent = ({ map }: MarkerComponentProps) => {
+const MarkerComponent = ({ map, clearLocalMarkers }: MarkerComponentProps) => {
     const markersRef = useRef<maplibregl.Marker[]>([]);
+    const popupsRef = useRef<maplibregl.Popup[]>([]);
     const wakuChatChannel = useStore($wakuChatChannel);
+    const previousGroupIdRef = useRef<string | null>(null);
 
     useEffect(() => {
         if (!wakuChatChannel || !map) return;
@@ -23,7 +29,6 @@ const MarkerComponent = ({ map }: MarkerComponentProps) => {
                 const payload = event.detail.payload;
                 if (!payload) return;
 
-                // Decode the message using protobuf
                 const GroupMessage = new protobuf.Type('GroupMessage')
                     .add(new protobuf.Field('time', 1, 'string'))
                     .add(new protobuf.Field('sender_id', 2, 'string'))
@@ -32,9 +37,9 @@ const MarkerComponent = ({ map }: MarkerComponentProps) => {
 
                 const MarkerProto = new protobuf.Type('Marker')
                     .add(new protobuf.Field('latitude', 1, 'float'))
-                    .add(new protobuf.Field('longitude', 2, 'float'));
+                    .add(new protobuf.Field('longitude', 2, 'float'))
+                    .add(new protobuf.Field('name', 3, 'string'));
 
-                // Create a root namespace and add the message types
                 const root = new protobuf.Root();
                 root.add(GroupMessage);
                 root.add(MarkerProto);
@@ -42,10 +47,8 @@ const MarkerComponent = ({ map }: MarkerComponentProps) => {
                 const decodedMessage = GroupMessage.decode(payload);
                 const data = decodedMessage.toJSON();
 
-                // Only process marker messages in this component
                 if (data.type !== 'marker') return;
 
-                // Decode the content
                 const contentBytes = (decodedMessage as any)
                     .content as Uint8Array;
                 const decodedContent = MarkerProto.decode(contentBytes);
@@ -53,16 +56,20 @@ const MarkerComponent = ({ map }: MarkerComponentProps) => {
                 const markerData: Marker = {
                     latitude: contentData.latitude,
                     longitude: contentData.longitude,
+                    name: contentData.name || '',
                 };
 
                 console.log('Received marker:', markerData);
 
-                // Add marker to map
-                const marker = new maplibregl.Marker()
-                    .setLngLat([markerData.longitude, markerData.latitude])
-                    .addTo(map);
+                const { marker, popup } = createMarkerWithName(
+                    map,
+                    markerData.latitude,
+                    markerData.longitude,
+                    markerData.name,
+                );
 
                 markersRef.current.push(marker);
+                popupsRef.current.push(popup);
             } catch (error) {
                 console.error('Error decoding marker message:', error);
             }
@@ -81,13 +88,39 @@ const MarkerComponent = ({ map }: MarkerComponentProps) => {
         };
     }, [wakuChatChannel, map]);
 
-    // Clean up markers when component unmounts
+    effect([$storeSelectedGroup], (selectedGroup) => {
+        const currentGroupId = selectedGroup?.id || null;
+
+        if (previousGroupIdRef.current !== currentGroupId) {
+            for (const marker of markersRef.current) {
+                marker.remove();
+            }
+
+            for (const popup of popupsRef.current) {
+                popup.remove();
+            }
+
+            markersRef.current = [];
+            popupsRef.current = [];
+
+            if (clearLocalMarkers) {
+                clearLocalMarkers();
+            }
+
+            previousGroupIdRef.current = currentGroupId;
+        }
+    });
+
     useEffect(() => {
         return () => {
             for (const marker of markersRef.current) {
                 marker.remove();
             }
+            for (const popup of popupsRef.current) {
+                popup.remove();
+            }
             markersRef.current = [];
+            popupsRef.current = [];
         };
     }, []);
 

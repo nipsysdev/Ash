@@ -6,6 +6,7 @@ export const $isSheetOpened = atom(false);
 export const $isNewGroupDialogOpened = atom(false);
 export const $isGroupInviteDialogOpened = atom(false);
 export const $isGroupJoinDialogOpened = atom(false);
+export const $isMarkerNameDialogOpened = atom(false);
 export const $mapSelectedLocality = atom<Locality | null>(null);
 
 effect($storeLocalities, (localities) => {

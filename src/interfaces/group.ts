@@ -14,6 +14,7 @@ export interface GroupChatMsg {
 export interface Marker {
     latitude: number;
     longitude: number;
+    name: string;
 }
 
 export interface GroupMessage {

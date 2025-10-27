@@ -11,7 +11,8 @@ export const newMsgProtoBuilder = () =>
 export const newMarkerProtoBuilder = () =>
     new protobuf.Type('Marker')
         .add(new protobuf.Field('latitude', 1, 'float'))
-        .add(new protobuf.Field('longitude', 2, 'float'));
+        .add(new protobuf.Field('longitude', 2, 'float'))
+        .add(new protobuf.Field('name', 3, 'string'));
 
 export const newGroupMessageProtoBuilder = () =>
     new protobuf.Type('GroupMessage')
@@ -71,6 +72,7 @@ async function sendGroupMessageInternal(msg: GroupMessage) {
         const markerProto = markerBuilder.create({
             latitude: marker.latitude,
             longitude: marker.longitude,
+            name: marker.name,
         });
         contentBytes = markerBuilder.encode(markerProto).finish();
     }

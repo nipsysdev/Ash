@@ -1,5 +1,5 @@
 import maplibregl from 'maplibre-gl';
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { useStore } from '@nanostores/react';
 import { layers, namedFlavor } from '@protomaps/basemaps';
@@ -9,8 +9,11 @@ import type { Marker } from '../interfaces/group';
 import type { Locality } from '../interfaces/localitysrv.ts';
 import { sendMarkerMessage } from '../service/chatService';
 import { $storeDeviceId } from '../stores/jsonStore';
+import { $isMarkerNameDialogOpened } from '../stores/mainViewStore';
+import { createMarkerWithName } from '../utils/mapUtils';
 import { createPMTilesProtocol } from '../utils/pmtiles-protocol.ts';
 import MarkerComponent from './MarkerComponent';
+import MarkerNameDialog from './MarkerNameDialog';
 
 interface MapComponentProps {
     locality: Locality | null;
@@ -20,12 +23,60 @@ const MapComponent = ({ locality }: MapComponentProps) => {
     const mapContainer = useRef<HTMLDivElement>(null);
     const map = useRef<maplibregl.Map | null>(null);
     const deviceId = useStore($storeDeviceId);
+    const [pendingMarker, setPendingMarker] = useState<{
+        lat: number;
+        lng: number;
+    } | null>(null);
+    const localMarkersRef = useRef<maplibregl.Marker[]>([]);
+    const localPopupsRef = useRef<maplibregl.Popup[]>([]);
 
-    const addMarkerToMap = useCallback((lat: number, lng: number) => {
-        if (!map.current) return;
+    const addMarkerToMap = useCallback(
+        (lat: number, lng: number, name: string) => {
+            if (!map.current) return;
 
-        new maplibregl.Marker().setLngLat([lng, lat]).addTo(map.current);
+            const { marker, popup } = createMarkerWithName(
+                map.current,
+                lat,
+                lng,
+                name,
+            );
+
+            localMarkersRef.current.push(marker);
+            localPopupsRef.current.push(popup);
+        },
+        [],
+    );
+
+    const clearLocalMarkers = useCallback(() => {
+        for (const marker of localMarkersRef.current) {
+            marker.remove();
+        }
+
+        for (const popup of localPopupsRef.current) {
+            popup.remove();
+        }
+
+        localMarkersRef.current = [];
+        localPopupsRef.current = [];
     }, []);
+
+    const handleMarkerNameSubmit = useCallback(
+        (name: string) => {
+            if (!pendingMarker || !deviceId) return;
+
+            const { lat, lng } = pendingMarker;
+            const markerData: Marker = {
+                latitude: lat,
+                longitude: lng,
+                name: name,
+            };
+
+            sendMarkerMessage(markerData, deviceId);
+            addMarkerToMap(lat, lng, name);
+            setPendingMarker(null);
+        },
+        [pendingMarker, deviceId, addMarkerToMap],
+    );
 
     useEffect(() => {
         if (!mapContainer.current || !locality) return;
@@ -61,10 +112,15 @@ const MapComponent = ({ locality }: MapComponentProps) => {
                         glyphs: `https://protomaps.github.io/basemaps-assets/fonts/{fontstack}/{range}.pbf`,
                     },
                     center: [locality.longitude, locality.latitude],
+                    maxBounds: [
+                        [locality.min_longitude, locality.min_latitude],
+                        [locality.max_longitude, locality.max_latitude],
+                    ],
                     zoom: 18,
                     pitch: 85,
                     attributionControl: false,
                     pitchWithRotate: false,
+                    touchPitch: false,
                     rollEnabled: false,
                 });
 
@@ -73,16 +129,9 @@ const MapComponent = ({ locality }: MapComponentProps) => {
                     if (!deviceId) return;
 
                     const { lng, lat } = e.lngLat;
-                    const markerData: Marker = {
-                        latitude: lat,
-                        longitude: lng,
-                    };
 
-                    // Send marker to other users
-                    sendMarkerMessage(markerData, deviceId);
-
-                    // Add marker to local map
-                    addMarkerToMap(lat, lng);
+                    setPendingMarker({ lat, lng });
+                    $isMarkerNameDialogOpened.set(true);
                 });
             } catch (error) {
                 console.error('Error initializing map:', error);
@@ -98,12 +147,16 @@ const MapComponent = ({ locality }: MapComponentProps) => {
                 maplibregl.removeProtocol('pmtiles');
             }
         };
-    }, [locality, deviceId, addMarkerToMap]);
+    }, [locality, deviceId]);
 
     return (
         <>
             <div ref={mapContainer} className="size-full" />
-            <MarkerComponent map={map.current} />
+            <MarkerComponent
+                map={map.current}
+                clearLocalMarkers={clearLocalMarkers}
+            />
+            <MarkerNameDialog onMarkerNameSubmit={handleMarkerNameSubmit} />
         </>
     );
 };
