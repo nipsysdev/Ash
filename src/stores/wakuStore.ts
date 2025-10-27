@@ -71,7 +71,7 @@ export async function createWakuNode() {
 
         const wakuLightNode = await createLightNode({
             defaultBootstrap: true,
-            userAgent: 'ash',
+            userAgent: 'dev.nipsys.ash',
         });
 
         wakuLightNode.events.addEventListener(
