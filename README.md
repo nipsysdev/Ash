@@ -13,6 +13,15 @@ https://github.com/user-attachments/assets/e5fda4ac-1ae7-4ea6-91b0-a920bb145a54
 
 Ash doesn't come with map data or harcoded backend urls. Instead of operating with a centralized backend, it uses a decentralized peer-to-peer network named Waku for sending and receiving messages. It also uses Arti, the implementation of Tor in Rust, for downloading map data served by hidden services.
 
+## Current Features
+
+- Search countries and localities through Waku
+- Download maps through Tor for offline use
+- Switch between different downloaded areas
+- Create, join, and manage groups
+- Message with group members
+- Share map markers between group members
+
 ### What is missing
 - Remove the last two http calls made by MapLibreGL to Github. They retrieve fonts and icons for the map.\
 I need to migrate them to the hidden service.
@@ -21,19 +30,23 @@ I need to migrate them to the hidden service.
 - Encrypt Waku messages in the group channel so only group members can read and reply.
 - Improve the way of communication between the app and the X number of servers listening in. Currently anyone subscribed to the right channel can read the waku messages. Also anyone can reply.\
 I need to add encryption and a way to ensure that the response is correct.
-- Need a way to have only the servers with the right dta to be able to reply.\
-Servers might not have the data that the user want. Being able to serve data from all localities of the world means storing 600+ gigabytes. (Which is what my service is currently doing)
+- Need a way to have only the servers with the right data to be able to reply.\
+Servers might not have the data that the user want. Being able to serve data from all localities of the world means storing 600+ gigabytes. (Which is what my service is currently doing but cant expect every services to do the same)
 - Find a way to make Waku requests happen over Tor (SOCKS5 proxy?).
 - Continue with implementing the app features.
 
-## Peer-to-Peer Backend Components
+## Peer-to-Peer Backend Services
 
 - [localitysrv](https://github.com/nipsysdev/localitysrv) - A Rust HTTP server that runs on localhost and as a Tor hidden service.\
 It enables the search of countries and localities. As well as downloading PMTiles map data
 - [localitysrv-waku](https://github.com/nipsysdev/localitysrv-waku) - A Node.js service for bridging Waku messages to localitysrv over localhost.\
 It is a workaround until Waku communication is implemented in localitysrv.
 
-## Technology
+## Current Architecture
+
+![Architecture diagram](https://raw.githubusercontent.com/nipsysdev/Ash/refs/heads/main/current_architecture.png)
+
+## Stack
 
 Built with:
 - Tauri (Rust)
@@ -43,15 +56,6 @@ Built with:
 - Protomaps, MapLibre GL and OpenStreetMap for map features
 
 The UI uses [@nipsysdev/lsd-react](https://github.com/nipsysdev/lsd-react), a library built on top of shadcn and Radix UI.
-
-## Current Features
-
-- Search countries and localities through Waku
-- Download maps through Tor for offline use
-- Switch between different downloaded areas
-- Create, join, and manage groups
-- Message with group members
-- Share map markers between group members
 
 ## Use cases
 ### Share Critical Information
